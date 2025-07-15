@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# implementation analysis tool using universal-parser
+# Usage: get_implementation <file_path> <node_name>
+
+set -e
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: get_implementation <file_path> <node_name>"
+    echo "  file_path: Absolute path to the file containing the node"
+    echo "  node_name: Name of the specific node to analyze"
+    echo ""
+    echo "Environment variables required:"
+    echo "  REPO_PATH: Path to the repository"
+    exit 1
+fi
+
+FILE_PATH="$1"
+NODE_NAME="$2"
+
+# Check if environment variable is set
+if [ -z "$REPO_PATH" ]; then
+    echo "Error: REPO_PATH environment variable is not set."
+    echo "Please set it to the path of the repository."
+    exit 1
+fi
+
+
+# Run universal-parser get-implementation command
+universal-parse get-definition \
+    --repo-dir "$REPO_PATH" \
+    --output-dir /volume \
+    --file-path "$FILE_PATH" \
+    --node-name "$NODE_NAME" 

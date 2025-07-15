@@ -425,6 +425,7 @@ class RunBatch:
 
 
 def run_from_config(config: RunBatchConfig):
+    print(config)
     RunBatch.from_config(config).main()
 
 

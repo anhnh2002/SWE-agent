@@ -112,6 +112,59 @@ class SWEEnv:
         self.reset()
         for command in self._post_startup_commands:
             self.communicate(command, check="raise", timeout=self.post_startup_command_timeout)
+        self.index_repo()
+
+    def index_repo(self) -> None:
+        # absolute path of current working directory is the repo path
+        repo_path = self.communicate("pwd", check="ignore").strip()
+        repo_name = self.communicate("basename $(pwd)", check="ignore").strip()
+
+        self.logger.debug(
+            f"repo-dir: |{repo_path}\n"
+            f"repo-name: |{repo_name}"
+        )
+        # check environment variables
+        # self.logger.debug(
+        #     f"LLM_MODEL: {self.communicate("echo $LLM_MODEL", check="raise")}\n"
+        #     f"LLM_API_KEY: {self.communicate("echo $LLM_API_KEY", check="raise")}\n"
+        #     f"LLM_BASE_URL: {self.communicate("echo $LLM_BASE_URL", check="raise")}\n"
+        # )
+
+        # set environment variable for repo path and aggregated results
+        self.set_env_variables({
+            "REPO_PATH": repo_path,
+            "LLM_MODEL": "claude-sonnet-4",
+            "LLM_API_KEY": "sk-1234",
+            "LLM_BASE_URL": "http://litellm:4000/",
+        })
+
+        # install package
+        # self.logger.debug("Installing Universal-Parser...")
+        # self.communicate("pip install git+https://github.com/anhnh2002/Universal-Parser.git", check="raise", timeout=180)
+
+        # self.logger.debug("Indexing repo...")
+
+        # ## then, index the repo with the absolute path of the repo
+        # output = self.communicate(
+        #     f"universal-parse parse --repo-dir {repo_path} --output-dir /volume --max-concurrent 50",
+        #     timeout=1800,
+        #     check="raise"
+        # )
+        # self.logger.debug(f"Universal-Parser PARSE output:\n{output}")
+
+
+
+    def _incrimental_index_repo(self) -> None:
+        """Incremental indexing of the repo"""
+        repo_path = self.communicate("echo $REPO_PATH", check="ignore").strip()
+
+        self.logger.debug("Incremental indexing of the repo...")
+        output = self.communicate(
+            f"universal-parse update --repo-dir {repo_path} --output-dir /volume --max-concurrent 10 ",
+            timeout=360,
+            check="raise"
+        )
+        self.logger.debug(f"Universal-Parser UPDATE output:\n{output}")
 
     def _copy_repo(self) -> None:
         """Clone/copy repository/codebase in container"""

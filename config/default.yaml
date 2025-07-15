@@ -38,8 +38,10 @@ agent:
       PIP_PROGRESS_BAR: 'off'
       TQDM_DISABLE: '1'
       GIT_PAGER: cat
+
     bundles:
       - path: tools/registry
+      - path: tools/dependency_graph
       - path: tools/edit_anthropic
       - path: tools/review_on_submit_m
     registry_variables:
@@ -67,3 +69,27 @@ agent:
   history_processors:
     - type: cache_control
       last_n_messages: 2
+  model:
+    # name: openai/claude-sonnet-4
+    # api_key: sk-1234
+    # api_base: http://0.0.0.0:4000/
+    max_input_tokens: 200000
+    per_instance_cost_limit: 1
+    name: claude-sonnet-4-20250514
+    api_key: $CLAUDE_API_KEY_ROTATION
+
+env:
+  repo:
+    github_url: https://github.com/SWE-agent/test-repo
+  deployment:
+    docker_args:
+      - '--memory=5g'
+      - '--network=litellm-proxy_default'
+  post_startup_commands:
+    - 'export LLM_MODEL=claude-sonnet-4'
+    - 'export LLM_API_KEY=sk-1234'
+    - 'export LLM_BASE_URL=http://litellm:4000/'
+    - 'pip install git+https://github.com/anhnh2002/Universal-Parser.git'
+
+problem_statement:
+  text: "Add a simple hello world function to the repository."

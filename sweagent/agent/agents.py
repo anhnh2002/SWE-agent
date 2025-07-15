@@ -950,6 +950,10 @@ class DefaultAgent(AbstractAgent):
                 timeout=self.tools.config.execution_timeout,
                 check="raise" if self._always_require_zero_exit_code else "ignore",
             )
+
+            # Incremental indexing of the repo
+            # self._env._incrimental_index_repo()
+
         except CommandTimeoutError:
             self._n_consecutive_timeouts += 1
             if self._n_consecutive_timeouts >= self.tools.config.max_consecutive_execution_timeouts:

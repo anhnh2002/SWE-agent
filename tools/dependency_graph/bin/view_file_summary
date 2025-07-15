@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# File summary tool using universal-parser
+# Usage: file_summary <file_path>
+
+set -e
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: file_summary <file_path>"
+    echo "  file_path: Relative path to the file within the repository"
+    echo ""
+    echo "Environment variables required:"
+    echo "  AGGREGATED_RESULTS: Path to the JSON file containing parsed repository data"
+    exit 1
+fi
+
+FILE_PATH="$1"
+
+# Check if environment variable is set
+if [ -z "$REPO_PATH" ]; then
+    echo "Error: REPO_PATH environment variable is not set."
+    echo "Please set it to the path of the repository."
+    exit 1
+fi
+
+
+
+# Run universal-parser file-summary command
+universal-parse file-summary \
+    --repo-dir "$REPO_PATH" \
+    --output-dir /volume \
+    --file-path "$FILE_PATH" 

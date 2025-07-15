@@ -450,8 +450,23 @@ class EditTool:
             stderr = out.stderr.decode()
 
             if not stderr:
-                stdout = f"Here's the files and directories up to 2 levels deep in {path}, excluding hidden items:\n{stdout}\n"
-                print(stdout)
+                items = stdout.strip().split('\n') if stdout.strip() else []
+                formatted_output = []
+                
+                for item in items:
+                    item_path = Path(item)
+                    if item_path.is_file():
+                        try:
+                            with open(item_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                line_count = sum(1 for _ in f)
+                            formatted_output.append(f"{item} ({line_count} lines)")
+                        except (OSError, IOError):
+                            formatted_output.append(f"{item} (unable to count lines)")
+                    else:
+                        formatted_output.append(item)
+                
+                result = f"Here's the files and directories up to 2 levels deep in {path}, excluding hidden items:\n" + '\n'.join(formatted_output) + '\n'
+                print(result)
             return
 
         file_content = self.read_file(path)

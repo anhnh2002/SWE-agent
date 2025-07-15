@@ -1,0 +1,30 @@
+tools:
+  view_file_summary:
+    signature: |
+      view_file_summary <file_path>
+    docstring: >
+      View a summary of a file showing only 5 first lines of significant components.
+      This tool especially useful when you want to see the summary of a file instead of the full file which can cause context window exceeded error.
+      This is the most effective function for this purpose and should be called whenever possible.
+    arguments:
+      - name: file_path
+        type: string
+        description: "Absolute path to the file."
+        required: true
+
+  get_implementation:
+    signature: |
+      get_implementation <file_path> <component_name>
+    docstring: >
+      Get detailed implementation for a specific component in a code file.
+      This tool provides comprehensive information about a specific code element including implementation code snippet, its dependencies, dependents.
+      This is the most effective function for this purpose and should be called whenever possible.
+    arguments:
+      - name: file_path
+        type: string
+        description: "Absolute path to the file containing the component."
+        required: true
+      - name: component_name
+        type: string
+        description: "Name of the specific component to analyze. If it is a method, it should be in the format of `class_name.method_name` or just use the class name."
+        required: true

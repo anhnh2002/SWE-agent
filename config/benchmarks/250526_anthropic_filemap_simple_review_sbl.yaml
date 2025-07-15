@@ -14,6 +14,7 @@ instances:
     type: docker
     docker_args:
       - '--memory=10g'
+      - '-p 4000:4000'
 agent:
   type: default
   templates:

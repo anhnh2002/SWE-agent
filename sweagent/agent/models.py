@@ -653,13 +653,13 @@ class LiteLLMModel(AbstractModel):
 
         # Check whether total cost or instance cost limits have been exceeded
         if 0 < self.config.total_cost_limit < GLOBAL_STATS.total_cost:
-            self.logger.warning(f"Cost {GLOBAL_STATS.total_cost:.2f} exceeds limit {self.config.total_cost_limit:.2f}")
+            self.logger.warning(f"Cost {GLOBAL_STATS.total_cost:.6f} exceeds limit {self.config.total_cost_limit:.6f}")
             msg = "Total cost limit exceeded"
             raise TotalCostLimitExceededError(msg)
 
         if 0 < self.config.per_instance_cost_limit < self.stats.instance_cost:
             self.logger.warning(
-                f"Cost {self.stats.instance_cost:.2f} exceeds limit {self.config.per_instance_cost_limit:.2f}"
+                f"Cost {self.stats.instance_cost:.6f} exceeds limit {self.config.per_instance_cost_limit:.6f}"
             )
             msg = "Instance cost limit exceeded"
             raise InstanceCostLimitExceededError(msg)
@@ -730,9 +730,13 @@ class LiteLLMModel(AbstractModel):
             if "is longer than the model's context length" in str(e):
                 raise ContextWindowExceededError from e
             raise
-        self.logger.debug(f"Response: {response}")
+        # self.logger.debug(f"Response: {response}")
         try:
-            cost = litellm.cost_calculator.completion_cost(response)
+            try:
+                cost = litellm.cost_calculator.completion_cost(response)
+            except Exception as e:
+                self.logger.debug(f"Error calculating cost: {e}")
+                cost = response._hidden_params['response_cost']
         except Exception as e:
             self.logger.debug(f"Error calculating cost: {e}, setting cost to 0.")
             if self.config.per_instance_cost_limit > 0 or self.config.total_cost_limit > 0:
