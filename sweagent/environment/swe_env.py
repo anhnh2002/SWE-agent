@@ -138,19 +138,16 @@ class SWEEnv:
             "LLM_BASE_URL": "http://litellm:4000/",
         })
 
+        # install pip
+        self.logger.debug("Installing pip...")
+        # Update package lists first
+        self.communicate("apt update", check="raise", timeout=180)
+        # Install pip with non-interactive flag
+        self.communicate("apt install -y python3-pip", check="raise", timeout=180)
+
         # install package
-        # self.logger.debug("Installing Universal-Parser...")
-        # self.communicate("pip install git+https://github.com/anhnh2002/Universal-Parser.git", check="raise", timeout=180)
-
-        # self.logger.debug("Indexing repo...")
-
-        # ## then, index the repo with the absolute path of the repo
-        # output = self.communicate(
-        #     f"universal-parse parse --repo-dir {repo_path} --output-dir /volume --max-concurrent 50",
-        #     timeout=1800,
-        #     check="raise"
-        # )
-        # self.logger.debug(f"Universal-Parser PARSE output:\n{output}")
+        self.logger.debug("Installing Universal-Parser...")
+        self.communicate("pip3 install --break-system-packages git+https://github.com/anhnh2002/Universal-Parser.git", check="raise", timeout=180)
 
 
 
